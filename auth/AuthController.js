@@ -23,23 +23,23 @@ router.post('/register', (req, res) => {
                 status: false,
                 message: "Email has already been taken"
             });
+        } else {
+            User.create({
+                name: req.body.name,
+                email: req.body.email,
+                password: hashedPassword
+            }, 
+            (err, user) => {
+                if (err) {
+                    return res.status(500).send('There was a problem while registering a new user');
+                }
+        
+                return res.status(200).send({
+                    auth : true,
+                    message: 'Congratulations! User is registered successfully.'
+                });
+            });
         }
-    });
-
-    User.create({
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPassword
-    }, 
-    (err, user) => {
-        if (err) {
-            return res.status(500).send('There was a problem while registering a new user');
-        }
-
-        return res.status(200).send({
-            auth : true,
-            message: 'Congratulations! User is registered successfully.'
-        });
     });
 });
 
