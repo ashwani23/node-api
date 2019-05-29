@@ -2,8 +2,9 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const graphqlHttp = require('express-graphql');
-const { buildSchema, graphqlQl } = require('graphql');
+const { buildSchema } = require('graphql');
 const Event = require('./models/Event')
+const User = require('./models/User')
 
 app.use(cors());
 
@@ -23,6 +24,13 @@ app.use('/graphql', graphqlHttp({
             date: String!
         }
 
+        type User {
+            _id: ID!
+            name: String!
+            email: String!
+            password: String!
+        }
+
         input EventInput {
             title: String!
             description: String!
@@ -32,6 +40,7 @@ app.use('/graphql', graphqlHttp({
 
         type RootQuery {
             events: [Event!]!
+            users: [User!]!
         }
 
         type RootMutation {
@@ -53,6 +62,13 @@ app.use('/graphql', graphqlHttp({
                     })
                 })
                 .catch(err => { throw err; });
+        },
+        users: async () => {
+            try {
+                return await User.find().exec()
+            } catch (err) {
+                return err;
+            }
         },
         createEvent: (args) => {
             const event = new Event({
